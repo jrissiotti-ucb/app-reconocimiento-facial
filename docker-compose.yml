@@ -1,0 +1,26 @@
+services:
+  bd-chroma:
+    image: chromadb/chroma:0.5.23
+    container_name: bd-chroma
+    ports:
+      - "8001:8000"          # acceso opcional desde tu PC
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+
+  app-reconocimiento-facial:
+    build: .
+    container_name: app-reconocimiento-facial
+    depends_on:
+      - bd-chroma
+    ports:
+      - "8080:8080"
+    environment:
+      - CHROMA_HOST=bd-chroma
+      - CHROMA_PORT=8000
+      - UMBRAL_SIMILITUD=0.35
+
+volumes:
+  chroma_data:
